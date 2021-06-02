@@ -1,8 +1,10 @@
 const Planeta = require('../model/Planeta')
+const axios = require('axios');
 const ObjectId = require('mongodb').ObjectID;
 
 
 const idError = 'Invalid id. Id must be a single String of 12 bytes or a string of 24 hex characters'
+const swapiUri = 'https://swapi.dev/api/planets/'
 
 class PlanetaService {
     constructor() {
@@ -29,7 +31,15 @@ class PlanetaService {
     }
 }
 
+class SwaiapiService {
+    async getAparicoesPlaneta(name) {
+        const url = `${swapiUri}?search=${name}`
+        return axios.get(url)
+    }
+}
+
 const planetaService = new PlanetaService()
+const swaiapiService = new SwaiapiService()
 
 class PlanetaController {
     async list(req, res) {
@@ -37,7 +47,22 @@ class PlanetaController {
 
         const data = await Planeta.find(filter)
 
-        return res.json(data)
+        const resultArray = await Promise.all(data.map(async (i) => {
+            const apiResponse = await swaiapiService.getAparicoesPlaneta(i.nome)
+            let quantidadeAparicoes = 0
+            if (apiResponse.data.results.length == 1) {
+                const planetaSearched = apiResponse.data.results[0]
+                quantidadeAparicoes = planetaSearched.films.length ? planetaSearched.films.length : 0
+            }
+            return {
+                nome: i.nome,
+                clima: i.clima,
+                terreno: i.terreno,
+                quantidadeAparicoes: quantidadeAparicoes
+            }
+        }));
+
+        return res.json(resultArray)
     }
 
     async findOne(req, res) {
@@ -49,6 +74,7 @@ class PlanetaController {
 
         const query = { "_id": ObjectId(id) }
         const data = await Planeta.findOne(query)
+        
 
         return res.json(data)
     }
