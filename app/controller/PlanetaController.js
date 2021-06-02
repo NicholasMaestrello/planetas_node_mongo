@@ -4,29 +4,36 @@ const ObjectId = require('mongodb').ObjectID;
 
 const idError = 'Invalid id. Id must be a single String of 12 bytes or a string of 24 hex characters'
 
-function _sendErrorsResponse(res, errors) {
-    return res
-        .status(400)
-        .json({ errors: [...errors] })
+class PlanetaService {
+    constructor() {
+    }
+
+    _sendErrorsResponse(res, errors) {
+        return res
+            .status(400)
+            .json({ errors: [...errors] })
+    }
+
+    createFilter(requestQuery) {
+        const filter = {}
+        if (requestQuery.nome) {
+            filter.nome = requestQuery.nome
+        }
+        if (requestQuery.clima) {
+            filter.clima = requestQuery.clima
+        }
+        if (requestQuery.terreno) {
+            filter.terreno = requestQuery.terreno
+        }
+        return filter
+    }
 }
 
-function createFilter(requestQuery) {
-    const filter = {}
-    if (requestQuery.nome) {
-        filter.nome = requestQuery.nome
-    }
-    if (requestQuery.clima) {
-        filter.clima = requestQuery.clima
-    }
-    if (requestQuery.terreno) {
-        filter.terreno = requestQuery.terreno
-    }
-    return filter
-}
+const planetaService = new PlanetaService()
 
 class PlanetaController {
     async list(req, res) {
-        const filter = createFilter(req.query)
+        const filter = planetaService.createFilter(req.query)
 
         const data = await Planeta.find(filter)
 
@@ -37,7 +44,7 @@ class PlanetaController {
         const id = req.params.id
 
         if (!ObjectId.isValid(id)) {
-            return _sendErrorsResponse(res, [idError])
+            return planetaService._sendErrorsResponse(res, [idError])
         }
 
         const query = { "_id": ObjectId(id) }
@@ -56,7 +63,7 @@ class PlanetaController {
         const id = req.params.id
 
         if (!ObjectId.isValid(id)) {
-            return _sendErrorsResponse(res, [idError])
+            return planetaService._sendErrorsResponse(res, [idError])
         }
 
         const query = { "_id": ObjectId(id) }
@@ -72,7 +79,7 @@ class PlanetaController {
         const id = req.params.id
 
         if (!ObjectId.isValid(id)) {
-            return _sendErrorsResponse(res, [idError])
+            return planetaService._sendErrorsResponse(res, [idError])
         }
 
         const query = { "_id": ObjectId(id) }
