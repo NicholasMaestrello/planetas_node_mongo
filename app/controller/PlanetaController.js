@@ -32,9 +32,25 @@ class PlanetaService {
 }
 
 class SwaiapiService {
-    async getAparicoesPlaneta(name) {
+    async getQuantidadeAparicoesPlaneta(name) {
         const url = `${swapiUri}?search=${name}`
-        return axios.get(url)
+        const apiResponse = await axios.get(url)
+        let quantidadeAparicoes = 0
+        if (apiResponse.data.results.length == 1) {
+            const planetaSearched = apiResponse.data.results[0]
+            quantidadeAparicoes = planetaSearched.films.length ? planetaSearched.films.length : 0
+        }
+        return quantidadeAparicoes
+    }
+
+    createResponseJson(data, quantidadeAparicoes) {
+        return {
+            _id: data._id,
+            nome: data.nome,
+            clima: data.clima,
+            terreno: data.terreno,
+            quantidadeAparicoes: quantidadeAparicoes
+        }
     }
 }
 
@@ -48,18 +64,8 @@ class PlanetaController {
         const data = await Planeta.find(filter)
 
         const resultArray = await Promise.all(data.map(async (i) => {
-            const apiResponse = await swaiapiService.getAparicoesPlaneta(i.nome)
-            let quantidadeAparicoes = 0
-            if (apiResponse.data.results.length == 1) {
-                const planetaSearched = apiResponse.data.results[0]
-                quantidadeAparicoes = planetaSearched.films.length ? planetaSearched.films.length : 0
-            }
-            return {
-                nome: i.nome,
-                clima: i.clima,
-                terreno: i.terreno,
-                quantidadeAparicoes: quantidadeAparicoes
-            }
+            const quantidadeAparicoesPlaneta = await swaiapiService.getQuantidadeAparicoesPlaneta(i.nome)
+            return swaiapiService.createResponseJson(i, quantidadeAparicoesPlaneta)
         }));
 
         return res.json(resultArray)
@@ -74,9 +80,10 @@ class PlanetaController {
 
         const query = { "_id": ObjectId(id) }
         const data = await Planeta.findOne(query)
-        
 
-        return res.json(data)
+        const quantidadeAparicoesPlaneta = await swaiapiService.getQuantidadeAparicoesPlaneta(data.nome)
+
+        return res.json(swaiapiService.createResponseJson(data, quantidadeAparicoesPlaneta))
     }
 
     async create(req, res) {
