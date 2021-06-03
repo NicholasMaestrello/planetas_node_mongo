@@ -54,11 +54,14 @@ class PlanetaController {
 
         const data = await Planeta.find(filter)
 
-        const resultArray = await Promise.all(data.map(async (i) => {
-            const quantidadeAparicoesPlaneta = await getQuantidadeAparicoesPlaneta(i.nome)
-            return createResponseJson(i, quantidadeAparicoesPlaneta)
-        }));
+        let resultArray = []
+        if (data && data.length) {
+            resultArray = await Promise.all(data.map(async (i) => {
+                const quantidadeAparicoesPlaneta = await getQuantidadeAparicoesPlaneta(i.nome)
+                return createResponseJson(i, quantidadeAparicoesPlaneta)
+            }));
 
+        }
         return res.json(resultArray)
     }
 
@@ -71,6 +74,10 @@ class PlanetaController {
 
         const query = { "_id": ObjectId(id) }
         const data = await Planeta.findOne(query)
+
+        if (!data) {
+            return res.json(null)
+        }
 
         const quantidadeAparicoesPlaneta = await getQuantidadeAparicoesPlaneta(data.nome)
 

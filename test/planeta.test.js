@@ -1,0 +1,110 @@
+const mongoose = require('mongoose')
+
+const dbHandler = require('./db-handler')
+const planetaController = require('../app/controller/PlanetaController')
+const planetaModel = require('../app/model/Planeta')
+
+const axios = require('axios')
+
+jest.mock('axios')
+
+beforeAll(async () => await dbHandler.connect())
+
+afterEach(async () => await dbHandler.clearDatabase())
+
+afterAll(async () => await dbHandler.closeDatabase())
+
+describe('planeta', () => {
+    it('Can be created', async () => {
+        expect(async () => planetaController.create(plantaRequestMock, responseCallMocked))
+            .not
+            .toThrow()
+    })
+
+    it('Should give correct element', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve(swaiApiMock))
+
+        const createdPlanet = await planetaController.create(plantaRequestMock, responseCallMocked)
+        const request = { params: { id: createdPlanet._id } }
+
+        const foundPlanet = await planetaController.findOne(request, responseCallMocked)
+
+        expect(foundPlanet._id).toStrictEqual(createdPlanet._id)
+        expect(foundPlanet.nome).toStrictEqual(createdPlanet.nome)
+        expect(foundPlanet.clima).toStrictEqual(createdPlanet.clima)
+        expect(foundPlanet.terreno).toStrictEqual(createdPlanet.terreno)
+        expect(foundPlanet.quantidadeAparicoes).toStrictEqual(1)
+    })
+
+    it('Should list all elements', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve(swaiApiMock))
+
+        const createdPlanet = await planetaController.create(plantaRequestMock, responseCallMocked)
+
+        const request = { query: {} }
+        const response = await planetaController.list(request, responseCallMocked)
+
+        expect(response.length).toStrictEqual(1)
+    })
+
+    it('Should return null if nothing is found', async () => {
+        const request = { params: { id: mongoose.Types.ObjectId() } }
+        const response = await planetaController.findOne(request, responseCallMocked)
+        expect(response).toBeNull()
+    })
+
+    it('Should delete', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve(swaiApiMock))
+
+        const createdPlanet = await planetaController.create(plantaRequestMock, responseCallMocked)
+
+        let request = { params: { id: createdPlanet._id } }
+        const deletedPlanet = await planetaController.delete(request, responseCallMocked)
+
+        request = { query: {} }
+        const listedPlanets = await planetaController.list(request, responseCallMocked)
+
+        expect(listedPlanets.length).toStrictEqual(0)
+    })
+
+    it('Should update', async () => {
+        axios.get.mockImplementationOnce(() => Promise.resolve(swaiApiMock))
+
+        const createdPlanet = await planetaController.create(plantaRequestMock, responseCallMocked)
+
+        const modifiedNome = 'Nome 2'
+        createdPlanet.nome = modifiedNome
+        let request = { params: { id: createdPlanet._id }, body: createdPlanet }
+        const updatedPlanet = await planetaController.update(request, responseCallMocked)
+
+        request = { params: { id: createdPlanet._id } }
+        const foundPlanet = await planetaController.findOne(request, responseCallMocked)
+
+        expect(foundPlanet._id).toStrictEqual(createdPlanet._id)
+        expect(foundPlanet.nome).toStrictEqual(createdPlanet.nome)
+        expect(foundPlanet.clima).toStrictEqual(createdPlanet.clima)
+        expect(foundPlanet.terreno).toStrictEqual(createdPlanet.terreno)
+        expect(foundPlanet.quantidadeAparicoes).toStrictEqual(1)
+    })
+})
+
+
+const plantaRequestMock = {
+    nome: 'nome1',
+    clima: 'clima1',
+    terreno: 'terreno1'
+}
+
+const responseCallMocked = { json: r => r }
+
+const swaiApiMock = {
+    data: {
+        results: [
+            {
+                films: [
+                    'mock'
+                ]
+            }
+        ]
+    }
+}
