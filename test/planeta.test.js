@@ -21,7 +21,7 @@ describe('planeta', () => {
             .toThrow()
     })
 
-    it('Should give correct element', async () => {
+    fit('Should give correct element', async () => {
         axios.get.mockImplementationOnce(() => Promise.resolve(swaiApiMock))
 
         const createdPlaneta = await planetaController.create(plantaRequestMock, responseCallMocked)
@@ -60,7 +60,7 @@ describe('planeta', () => {
         const createdPlanet = await planetaController.create(plantaRequestMock, responseCallMocked)
 
         let request = { params: { id: createdPlanet._id } }
-        const deletedPlanet = await planetaController.delete(request, responseCallMocked)
+        await planetaController.delete(request, responseCallMocked)
 
         request = { query: {} }
         const listedPlanets = await planetaController.list(request, responseCallMocked)
@@ -76,7 +76,7 @@ describe('planeta', () => {
         const modifiedNome = 'Nome 2'
         createdPlaneta.nome = modifiedNome
         let request = { params: { id: createdPlaneta._id }, body: createdPlaneta }
-        const updatedPlanet = await planetaController.update(request, responseCallMocked)
+        await planetaController.update(request, responseCallMocked)
 
         request = { params: { id: createdPlaneta._id } }
         const foundPlaneta = await planetaController.findOne(request, responseCallMocked)
