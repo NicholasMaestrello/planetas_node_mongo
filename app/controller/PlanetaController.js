@@ -7,12 +7,14 @@ const idError = 'Invalid id. Id must be a single String of 12 bytes or a string 
 const swapiUri = 'https://swapi.dev/api/planets/'
 
 
+// envia resposta
 sendErrorsResponse = (res, errors) => {
     return res
         .status(400)
         .json({ errors: [...errors] })
 }
 
+// recebe filtro em forma de query da request e monta o filtro para o DB
 createFilter = (requestQuery) => {
     const filter = {}
     if (requestQuery.nome) {
@@ -27,6 +29,7 @@ createFilter = (requestQuery) => {
     return filter
 }
 
+// cria resposta json com modelo do planeta
 createResponseJson = (data, quantidadeAparicoes) => {
     return {
         _id: data._id,
@@ -48,13 +51,13 @@ getQuantidadeAparicoesPlaneta = async (name) => {
     return quantidadeAparicoes
 }
 
+// Classe de planeta controler responsavel por lidar com os metodos crud
 class PlanetaController {
     async list(req, res) {
         const filter = createFilter(req.query)
-
         const data = await Planeta.find(filter)
 
-        let resultArray = []
+        let resultArray = data
         if (data && data.length) {
             resultArray = await Promise.all(data.map(async (i) => {
                 const quantidadeAparicoesPlaneta = await getQuantidadeAparicoesPlaneta(i.nome)
@@ -86,7 +89,6 @@ class PlanetaController {
 
     async create(req, res) {
         const data = await Planeta.create(req.body)
-
         return res.json(data)
     }
 
