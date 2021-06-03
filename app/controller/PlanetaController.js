@@ -40,6 +40,7 @@ createResponseJson = (data, quantidadeAparicoes) => {
     }
 }
 
+// obtem quantidade de aparições em filme de um planeta
 getQuantidadeAparicoesPlaneta = async (name) => {
     const url = `${swapiUri}?search=${name}`
     const apiResponse = await axios.get(url)
