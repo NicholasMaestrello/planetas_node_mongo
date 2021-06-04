@@ -22,5 +22,7 @@
     },
     "jest": {
         "testEnvironment": "node"
-    }
+    },
+    "serverPort": "3000",
+    "mongodbUrl": "mongodb://localhost:27017/b2w"
 }

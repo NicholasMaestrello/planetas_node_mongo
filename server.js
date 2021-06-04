@@ -1,6 +1,8 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const db = { uri: 'mongodb://localhost:27017/b2w' }
+const pjson = require('./package.json');
+
+const db = { uri: pjson.mongodbUrl }
 
 const routes = require('./routes')
 
@@ -12,7 +14,7 @@ class App {
         this.middlewares()
         this.routes()
 
-        this.express.listen(3000, () => {
+        this.express.listen(pjson.serverPort, () => {
             console.log('B2W api rest for Star Wars Planets')
         })
     }

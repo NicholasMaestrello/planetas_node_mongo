@@ -21,7 +21,7 @@ describe('planeta', () => {
             .toThrow()
     })
 
-    fit('Should give correct element', async () => {
+    it('Should give correct element', async () => {
         axios.get.mockImplementationOnce(() => Promise.resolve(swaiApiMock))
 
         const createdPlaneta = await planetaController.create(plantaRequestMock, responseCallMocked)
