@@ -17,12 +17,12 @@ Caso voce queira trocar o valor default da porta que o servidor express vai roda
 Para executar o projeto, basta rodar o comando`npm start` com isso a aplicação vai subir um servidor express e disponibilizar a API na porta configurada (default 3000)
 
 Para executar a API utilize os seguinte conjunto de endpoint
-| Metodo HTTP| URL | Descrição| 
-|--|--|--|
-| GET | {baseUrl}/api/planeta | Obtem a lista de planetas cadastrado na base de dados com a quantidade de filmes nos quais ele apareceu (caso tenha aparecido em algum). É possivel filtrar  pelo nome do fulme passando por `queryParam` o nome do filme, na propriedade `nome`, ex: `?nome=Tatooine`|
-| GET | {baseUrl}/api/planeta/:id | Obtem um unico planeta a partir do ID dele juntamente com a quantidade de filmes nos quais o mesmo apareceu. |
-| POST | {baseUrl}/api/planeta | Cadastra um novo planeta na base de dados.|
-| PUT | {baseUrl}/api/planeta/:id | Modifica um planeta existente da base de dados a partir de um ID. |
+| Metodo HTTP| URL | Descrição| Payload | Response |
+|--|--|--| -- | -- |
+| GET | {baseUrl}/api/planeta | Obtem a lista de planetas cadastrado na base de dados com a quantidade de filmes nos quais ele apareceu (caso tenha aparecido em algum). É possivel filtrar  pelo nome do fulme passando por `queryParam` o nome do filme, na propriedade `nome`, ex: `?nome=Tatooine`| | `[{"_id": "","nome": "","clima": "","terreno": "","quantidadeAparicoes": 0}]`|
+| GET | {baseUrl}/api/planeta/:id | Obtem um unico planeta a partir do ID dele juntamente com a quantidade de filmes nos quais o mesmo apareceu. | | `{"_id": "","nome": "","clima": "","terreno": "","quantidadeAparicoes": 0}` |
+| POST | {baseUrl}/api/planeta | Cadastra um novo planeta na base de dados.| `{"nome": "","clima": "","terreno": ""}` |`{"_id": "","nome": "","clima": "","terreno": "","quantidadeAparicoes": 0}` |
+| PUT | {baseUrl}/api/planeta/:id | Modifica um planeta existente da base de dados a partir de um ID. | `{"nome": "","clima": "","terreno": ""}` |`{"_id": "","nome": "","clima": "","terreno": "","quantidadeAparicoes": 0}` |
 | DELETE | {baseUrl}/api/planeta/:id | Exclui um planeta existente da base de dados |
 
 ## Testes
